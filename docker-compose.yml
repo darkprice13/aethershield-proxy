@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  mother-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: mother_api_core
+    ports:
+      - "8000:8000"
+    restart: always
+
+  mother-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    container_name: mother_ui_deck
+    ports:
+      - "8501:8501"
+    environment:
+      # Instructs the UI to look for the API service inside the Docker network structure
+      - API_URL=http://mother-api:8000
+    depends_on:
+      - mother-api
+    restart: always

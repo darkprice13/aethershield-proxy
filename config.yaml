@@ -1,0 +1,23 @@
+# 🔱 HADES NET CORE CONFIGURATION SCHEMA
+# Decoupled Security Policies for Project AetherShield
+
+security_policies:
+  # Strictness level adjustments
+  egress_restriction_level: 5
+  zero_knowledge_flush_on_close: true
+
+# Custom Named-Entity Heuristics (Add any enterprise assets here to auto-mask them)
+proprietary_keywords:
+  - "Ethan Price"
+  - "Hades Net"
+  - "MOTHER Core"
+  - "Project AetherShield"
+  - "Acme Corp"
+  - "Project Genesis"
+
+# Advanced Regex Interception Signatures
+compiled_signatures:
+  EMAIL_ADDR: '[\w\.-]+@[\w\.-]+\.\w+'
+  PHONE_NUM: '\b\d{3}[-.]?\d{3}[-.]?\d{4}\b'
+  SSN_TAX_ID: '\b\d{3}-\d{2}-\d{4}\b'
+  IPV4_ADDRESS: '\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b'

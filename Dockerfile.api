@@ -1,0 +1,21 @@
+# Use an official, lightweight Python runtime box
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Prevent Python from writing pyc files and buffering stdout
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install systems dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Inject engineering modules
+COPY proxy_engine.py .
+COPY server.py .
+
+EXPOSE 8000
+
+# Fire up the production ASGI server gateway
+CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]
