@@ -1,3 +1,9 @@
+import uvicorn
+# 🛑 SERVER NEUTRALIZATION SWITCHES: Stops the engine from launching blocking server loops inside Streamlit
+uvicorn.run = lambda *args, **kwargs: print("⚠️ Uvicorn run loop neutralized for Streamlit runtime.")
+if hasattr(uvicorn, 'Server'):
+    uvicorn.Server.serve = lambda *args, **kwargs: print("⚠️ Uvicorn service hijacked safely.")
+
 import streamlit as st
 import pandas as pd
 import asyncio
@@ -43,7 +49,7 @@ if not st.session_state.authenticated:
         st.button("AUTHORIZE PERIMETER ENTRY", on_click=check_identity)
     st.stop()
 
-# --- COGNITIVE CORE INITIALIZATION (Runs only after successful authentication) ---
+# --- COGNITIVE CORE INITIALIZATION (Runs safely now without crashing) ---
 if 'shield' not in st.session_state:
     st.session_state.shield = AetherShieldEngine()
 
