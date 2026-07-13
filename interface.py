@@ -130,4 +130,14 @@ st.markdown("### 📜 Institutional Compliance Vault Log Matrix & Threat Ledger"
 st.write("Below is the internal analytics database tracking active intercepts, corporate financial liabilities avoided, and regulatory classification records:")
 
 df_db = pd.DataFrame(st.session_state.compliance_db)
+# 📑 THE COMPLIANCE EXPORT GATEWAY
+st.markdown("<br>", unsafe_allow_html=True)
+csv_buffer = df_db.to_csv(index=False).encode('utf-8')
+
+st.download_button(
+    label="📥 DOWNLOAD OFFICIAL REGULATORY AUDIT REPORT (.CSV)",
+    data=csv_buffer,
+    file_name=f"HadesNet_AetherShield_Audit_{pd.Timestamp.now().strftime('%Y%m%d')}.csv",
+    mime="text/csv"
+)
 st.dataframe(df_db, use_container_width=True, hide_index=True)
