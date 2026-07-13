@@ -6,7 +6,7 @@ from proxy_engine import AetherShieldEngine
 # Page configurations matching the signature luxury theme
 st.set_page_config(page_title="Hades Net — MOTHER Core", page_icon="🔱", layout="wide")
 
-# SSO Identity Management Logic
+# Identity Management Logic
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
 
@@ -43,12 +43,11 @@ if not st.session_state.authenticated:
         st.button("AUTHORIZE PERIMETER ENTRY", on_click=check_identity)
     st.stop()
 
-# --- COGNITIVE CORE INITIALIZATION ---
+# --- COGNITIVE CORE INITIALIZATION (Runs only after successful authentication) ---
 if 'shield' not in st.session_state:
     st.session_state.shield = AetherShieldEngine()
 
 if 'current_session' not in st.session_state:
-    # Safely spin up a persistent dynamic masking workspace vault
     st.session_state.current_session = asyncio.run(st.session_state.shield.initialize_session())
 
 if 'compliance_db' not in st.session_state:
@@ -62,7 +61,7 @@ if 'compliance_db' not in st.session_state:
 with st.sidebar:
     st.markdown("## 🔱 HADESNET SYSTEM")
     st.markdown("### `IDENTITY: ETHAN PRICE` ")
-    st.markdown(f"### `TRACE TRACE_ID: {st.session_state.current_session}`")
+    st.markdown(f"### `TRACE ID: {st.session_state.current_session}`")
     st.markdown("<div class='gold-divider'></div>", unsafe_allow_html=True)
     if st.button("LOGOUT PERIMETER"):
         st.session_state.authenticated = False
@@ -82,7 +81,7 @@ with m_col3:
     st.markdown("<div class='metric-box'><h3>LIABILITY SECURED</h3><p style='color:#D4AF37; font-size:24px; font-weight:bold; margin:0;'>$445,000 USD</p></div>", unsafe_allow_html=True)
 
 # Live Test Bench Intercept Framework
-st.markdown("## 🛠️ LIVE METRIC INTERCEPT ENTRYWAY")
+st.markdown("<h2>🛠️ LIVE METRIC INTERCEPT ENTRYWAY</h2>", unsafe_allow_html=True)
 raw_input = st.text_area(
     "INBOUND RAW DATA STREAM (Include sensitive numbers or configurations to test the proxy filtration)", 
     height=120,
@@ -95,7 +94,7 @@ if st.button("RUN PERIMETER INTERCEPT"):
             st.session_state.shield.secure_inbound_payload(st.session_state.current_session, raw_input)
         )
         st.session_state['last_sanitized_payload'] = sanitized_result
-        st.success("🔒 EDGE FILTER COMPLETE: SENSITIVE STRINGS CONVERTED TO CRYPTOGRAPHIC PLACEHOLDERS")
+        st.success("🔒 EDGE FILTER COMPLETE: SENSITIVE STRINGS CONVERTED TO PLACEHOLDERS")
     else:
         st.warning("Payload vector stream cannot be empty.")
 
@@ -124,5 +123,5 @@ if 'last_sanitized_payload' in st.session_state:
 
 # Persistent Regulatory Audit Trail Table
 st.markdown("<div class='gold-divider'></div>", unsafe_allow_html=True)
-st.markdown("## 📊 HISTORICAL AUDIT & COMPLIANCE THREAT LEDGER")
+st.markdown("## 📊 HISTORICAL AUDIT & COMPLIANCE THREAT LEDGER", unsafe_allow_html=True)
 st.dataframe(pd.DataFrame(st.session_state.compliance_db), use_container_width=True)
