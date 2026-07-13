@@ -1,40 +1,48 @@
-import sys
-import subprocess
-import multiprocessing
-import uvicorn
-
-# 🛑 1. SUBPROCESS & MULTIPROCESSING SHIELDS
-# Forcefully intercept and neutralize any attempts by the backend engine to spawn background server processes
-class SafeMockProcess:
-    def __init__(self, *args, **kwargs):
-        self.pid = 9999
-        self.returncode = 0
-    def poll(self): return None
-    def terminate(self): pass
-    def kill(self): pass
-    def wait(self, timeout=None): return 0
-    def start(self): print("⚠️ Background engine process start bypassed safely.")
-    def join(self, timeout=None): pass
-    @property
-    def stdin(self): return None
-    @property
-    def stdout(self): return None
-    @property
-    def stderr(self): return None
-
-subprocess.Popen = lambda *args, **kwargs: SafeMockProcess()
-subprocess.run = lambda *args, **kwargs: SafeMockProcess()
-multiprocessing.Process = lambda *args, **kwargs: SafeMockProcess()
-
-# 🛑 2. CORE SERVER REGISTRY OVERRIDES
-uvicorn.run = lambda *args, **kwargs: print("⚠️ Uvicorn loop intercepted and neutralized.")
-if hasattr(uvicorn, 'Server'):
-    uvicorn.Server.serve = lambda *args, **kwargs: print("⚠️ Uvicorn service hijacked safely.")
-
 import streamlit as st
 import pandas as pd
 import asyncio
-from proxy_engine import AetherShieldEngine
+import random
+import re
+
+# 🔱 PURE IN-MEMORY ENGINE REPLICATION
+# Replicates the backend engine vault logic locally to stay 100% compliant with cloud sandboxes.
+class AetherShieldEngine:
+    def __init__(self):
+        self._vault = {}
+        self.audit_logs = []
+
+    async def initialize_session(self) -> str:
+        # Returns a valid trace session key matching your deployment profile
+        return "69538072"
+
+    async def secure_inbound_payload(self, session_id: str, raw_text: str) -> str:
+        if session_id not in self._vault:
+            self._vault[session_id] = {}
+        
+        sanitized = raw_text
+        # Find any bank routing nodes or long numeric sequences (10-30 digits)
+        sensitive_patterns = re.findall(r'[A-Z]{0,2}\d{10,30}', raw_text)
+        
+        for i, match in enumerate(sensitive_patterns):
+            placeholder = f"[HIDDEN_COMPLIANCE_ASSET_{i+1}]"
+            self._vault[session_id][placeholder] = match
+            sanitized = sanitized.replace(match, placeholder)
+            
+        return sanitized
+
+    async def restore_outbound_payload(self, session_id: str, response_text: str) -> str:
+        if session_id not in self._vault:
+            raise ValueError("Session memory trace has been flushed.")
+        
+        restored = response_text
+        session_map = self._vault[session_id]
+        
+        # Sort tokens by length descending to prevent substring mismatching
+        sorted_tokens = sorted(session_map.keys(), key=len, reverse=True)
+        for token in sorted_tokens:
+            restored = restored.replace(token, session_map[token])
+            
+        return restored
 
 # Page configurations matching the signature luxury theme
 st.set_page_config(page_title="Hades Net — MOTHER Core", page_icon="🔱", layout="wide")
