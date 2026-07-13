@@ -1,5 +1,8 @@
 streamlit
 pyyaml
+pandas
+streamlit
+pyyaml
 fastapi
 uvicorn
 streamlit
