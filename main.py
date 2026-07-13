@@ -1,6 +1,33 @@
+import sys
+import subprocess
+import multiprocessing
 import uvicorn
-# 🛑 SERVER NEUTRALIZATION SWITCHES: Stops the engine from launching blocking server loops inside Streamlit
-uvicorn.run = lambda *args, **kwargs: print("⚠️ Uvicorn run loop neutralized for Streamlit runtime.")
+
+# 🛑 1. SUBPROCESS & MULTIPROCESSING SHIELDS
+# Forcefully intercept and neutralize any attempts by the backend engine to spawn background server processes
+class SafeMockProcess:
+    def __init__(self, *args, **kwargs):
+        self.pid = 9999
+        self.returncode = 0
+    def poll(self): return None
+    def terminate(self): pass
+    def kill(self): pass
+    def wait(self, timeout=None): return 0
+    def start(self): print("⚠️ Background engine process start bypassed safely.")
+    def join(self, timeout=None): pass
+    @property
+    def stdin(self): return None
+    @property
+    def stdout(self): return None
+    @property
+    def stderr(self): return None
+
+subprocess.Popen = lambda *args, **kwargs: SafeMockProcess()
+subprocess.run = lambda *args, **kwargs: SafeMockProcess()
+multiprocessing.Process = lambda *args, **kwargs: SafeMockProcess()
+
+# 🛑 2. CORE SERVER REGISTRY OVERRIDES
+uvicorn.run = lambda *args, **kwargs: print("⚠️ Uvicorn loop intercepted and neutralized.")
 if hasattr(uvicorn, 'Server'):
     uvicorn.Server.serve = lambda *args, **kwargs: print("⚠️ Uvicorn service hijacked safely.")
 
